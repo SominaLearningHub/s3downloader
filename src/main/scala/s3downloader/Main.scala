@@ -46,7 +46,7 @@ object Main {
           .withRange(start, end)
         val file = new File(filenameFormat.format(index))
 
-        if (file == size) {
+        if (file != size) {
           val runnable = new Runnable {
             def run() {
               try {
