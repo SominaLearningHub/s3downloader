@@ -64,7 +64,8 @@ object Main {
           }
 
           new Thread(runnable).start()
-
+        } else {
+          map.put(index, true)
         }
     }
 
@@ -101,16 +102,6 @@ object Main {
 
         result :: accumulated
     }.reverse
-  }
-
-  def retry[T](n: Int)(fn: => T): T = {
-    try {
-      fn
-    } catch {
-      case e =>
-        if (n > 1) retry(n - 1)(fn)
-        else throw e
-    }
   }
 
 }
