@@ -33,6 +33,8 @@ object Main {
 
     val ranges = toPieces(size, pieces)
 
+    println(s"Downloading pieces ${ranges}")
+
     ranges.zipWithIndex.foreach {
       case (pair, index) =>
         val start = pair._1
@@ -48,6 +50,7 @@ object Main {
             def run() {
               try {
                 retry(3) {
+                  println(s"starting for index ${index}")
                   client.getObject( request, file )
                   map.put(index, true)
                 }
@@ -67,7 +70,7 @@ object Main {
     }
 
     while( map.size() != ranges.size ) {
-      print("Waiting for work to finish")
+      println("Waiting for work to finish")
       Thread.sleep(5000)
     }
 
