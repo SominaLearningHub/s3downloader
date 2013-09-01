@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.model.GetObjectRequest
 import java.io.File
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.{Executors, ConcurrentHashMap}
 
 /**
  * User: mauricio
@@ -23,8 +23,9 @@ object Main {
     val bucket = args(2)
     val credentials = new BasicAWSCredentials(key, secret)
     val path = args(3)
-    val pieces = 20
+    val pieces = 80
     val map = new ConcurrentHashMap[Int, Boolean]()
+    val pool = Executors.newFixedThreadPool(20)
 
     val client = new AmazonS3Client(credentials)
     val metadata = client.getObjectMetadata(bucket, path)
@@ -63,7 +64,7 @@ object Main {
             }
           }
 
-          new Thread(runnable).start()
+          pool.submit(runnable)
         } else {
           map.put(index, true)
         }
@@ -73,6 +74,8 @@ object Main {
       println("Waiting for work to finish")
       Thread.sleep(5000)
     }
+
+    pool.shutdown()
 
   }
 
