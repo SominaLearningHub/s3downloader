@@ -29,7 +29,7 @@ object Main {
     val client = new AmazonS3Client(credentials)
     val metadata = client.getObjectMetadata(bucket, path)
     val size = metadata.getContentLength / pieces
-    val filenameFormat = "filename-%000d.part"
+    val filenameFormat = "filename-%03d.part"
 
     val ranges = toPieces(size, pieces)
 
