@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Time: 1:23 PM
  */
 
-case class Status( piece : Int, finished : Boolean )
+case class Status(piece: Int, finished: Boolean)
 
 object Main {
 
@@ -24,7 +24,7 @@ object Main {
     val credentials = new BasicAWSCredentials(key, secret)
     val path = args(3)
     val pieces = 20
-    val map = new ConcurrentHashMap[Int,Boolean]()
+    val map = new ConcurrentHashMap[Int, Boolean]()
 
     val client = new AmazonS3Client(credentials)
     val metadata = client.getObjectMetadata(bucket, path)
@@ -33,6 +33,7 @@ object Main {
 
     val ranges = toPieces(size, pieces)
 
+    println(s"Fill document size is ${size}")
     println(s"Downloading pieces ${ranges}")
 
     ranges.zipWithIndex.foreach {
@@ -45,17 +46,15 @@ object Main {
           .withRange(start, end)
         val file = new File(filenameFormat.format(index))
 
-        if ( file == size ) {
+        if (file == size) {
           val runnable = new Runnable {
             def run() {
               try {
-                retry(3) {
-                  println(s"starting for index ${index} to file ${file.getAbsolutePath}")
-                  client.getObject( request, file )
-                  map.put(index, true)
-                }
+                println(s"starting for index ${index} to file ${file.getAbsolutePath}")
+                client.getObject(request, file)
+                map.put(index, true)
               } catch {
-                case e : Exception => {
+                case e: Exception => {
                   map.put(index, false)
                   println(s"Failed to execute part ${index}")
                   e.printStackTrace()
@@ -69,7 +68,7 @@ object Main {
         }
     }
 
-    while( map.size() != ranges.size ) {
+    while (map.size() != ranges.size) {
       println("Waiting for work to finish")
       Thread.sleep(5000)
     }
@@ -79,7 +78,7 @@ object Main {
   def toPieces(size: Long, parts: Long): Seq[(Long, Long)] = {
 
     val partSize = size / parts
-    val range = if ( (size % parts) == 0 ) {
+    val range = if ((size % parts) == 0) {
       0L.until(parts)
     } else {
       0L.until(parts).inclusive
