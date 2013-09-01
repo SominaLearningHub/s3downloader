@@ -50,7 +50,7 @@ object Main {
             def run() {
               try {
                 retry(3) {
-                  println(s"starting for index ${index}")
+                  println(s"starting for index ${index} to file ${file.getAbsolutePath}")
                   client.getObject( request, file )
                   map.put(index, true)
                 }
